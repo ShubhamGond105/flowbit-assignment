@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vendor {
+  id         String    @id @default(uuid())
+  name       String
+  taxId      String?   @map("tax_id")
+  address    Json?
+  email      String?   @map("contact_email")
+  invoices   Invoice[]
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+}
+
+model Customer {
+  id         String    @id @default(uuid())
+  name       String
+  contact    String?
+  invoices   Invoice[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Invoice {
+  id            String     @id @default(uuid())
+  invoiceNumber String     @map("invoice_number")
+  vendor        Vendor     @relation(fields: [vendorId], references: [id])
+  vendorId      String
+  customer      Customer?  @relation(fields: [customerId], references: [id])
+  customerId    String?
+  date          DateTime
+  dueDate       DateTime?  @map("due_date")
+  currency      String
+  totalAmount   Decimal    @map("total_amount") @db.Decimal(18, 2)
+  status        String
+  lineItems     LineItem[]
+  payments      Payment[]
+  documents     Document[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model LineItem {
+  id        String   @id @default(uuid())
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+  description String?
+  quantity  Decimal  @db.Decimal(18, 2)
+  unitPrice Decimal  @map("unit_price") @db.Decimal(18, 4)
+  tax       Decimal? @db.Decimal(18, 4)
+  category  String?
+  total     Decimal  @db.Decimal(18, 2)
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+  amount    Decimal  @db.Decimal(18, 2)
+  paidAt    DateTime @map("paid_at")
+  method    String?
+  reference String?
+}
+
+model Document {
+  id        String  @id @default(uuid())
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+  filename  String
+  url       String?
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+}
