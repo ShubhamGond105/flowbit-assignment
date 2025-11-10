@@ -10,11 +10,7 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* --- Sidebar --- */}
-      {/* This is now responsive.
-        - `fixed ... ${isSidebarOpen ? 'flex' : 'hidden'}`: On mobile, it's an overlay.
-        - `md:relative md:flex`: On medium screens and up, it's part of the layout.
-      */}
-      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 flex-col ${isSidebarOpen ? 'flex' : 'hidden'} md:relative md:flex`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 flex-col ${isSidebarOpen ? 'flex' : 'hidden'} md:relative md:flex flex-shrink-0`}>
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
@@ -34,7 +30,7 @@ export default function ChatPage() {
           </button>
         </div>
 
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <div className="mb-8">
             <h2 className="text-xs font-semibold text-gray-500 uppercase mb-3">General</h2>
             <ul className="space-y-2">
@@ -101,8 +97,11 @@ export default function ChatPage() {
           </div>
         </header>
 
-        {/* ChatBox Component takes up the rest of the space */}
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        {/* --- THIS IS THE FIX ---
+          - `overflow-auto` is changed to `overflow-hidden` (removes outer scrollbar).
+          - `p-4 md:p-6` is REMOVED (the ChatBox component now handles its own padding).
+        */}
+        <main className="flex-1 overflow-hidden">
           <ChatBox />
         </main>
       </div>
