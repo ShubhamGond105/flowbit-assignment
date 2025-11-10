@@ -54,9 +54,12 @@ export default function ChatBox() {
       });
 
       if (!res.ok) {
-        throw new Error(res.data.error || 'An error occurred');
+        // --- THIS IS FIX #4 (Build Error) ---
+        // Changed res.data.error to res.error
+        throw new Error(res.error || 'An error occurred');
       }
 
+      // This line assumes res.ok is true, so res.data exists
       const { sql, rows } = res.data;
 
       const botMessage: Message = {
@@ -81,9 +84,9 @@ export default function ChatBox() {
   };
 
   return (
-    // --- THIS IS FIX #1 ---
+    // --- THIS IS FIX #1 (Main Overflow) ---
     // Changed h-[calc(100vh-10rem)] to h-full
-    // This makes the chatbox fill its parent <main> tag, not the whole screen
+    // This makes the chatbox fit its parent <main> tag perfectly.
     <div className="flex flex-col h-full bg-white rounded-lg border">
       
       {/* Message display area */}
@@ -163,6 +166,8 @@ export default function ChatBox() {
   );
 }
 
+// --- HELPER COMPONENTS ---
+
 // --- THIS IS FIX #3 (Formats JSON nicely) ---
 // Helper to format individual cells
 function DataCell({ value }: { value: any }) {
@@ -175,7 +180,7 @@ function DataCell({ value }: { value: any }) {
   // This now checks for common date string formats
   if (typeof value === 'object' || (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/))) {
     try {
-      // Try to format as a locale date/time
+      // Try to format as a locale-aware date/time
       return new Date(value).toLocaleString();
     } catch (e) {
       // Fallback for complex objects
