@@ -1,8 +1,9 @@
 "use client"
 
+// --- THIS IS THE FIX ---
+// Combined all React imports and Lucide imports onto single lines
 import React, { useEffect, useState } from "react";
-import { MoreVertical, Menu, X } from "lucide-react"; // Import Menu and X icons
-import { useState } from "react"; // Import useState
+import { MoreVertical, Menu, X } from "lucide-react";
 
 // Corrected import path
 import apiFetch from "./lib/api"; 
@@ -66,8 +67,6 @@ export default function Dashboard() {
         if (fRes.ok) {
           const rows = fRes.data || [];
           
-          // --- THIS IS THE FIX ---
-          // We must explicitly type `values` as a record/dictionary
           const values: Record<string, number> = {}; 
 
           for (const r of rows) {
